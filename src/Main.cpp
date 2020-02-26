@@ -1,26 +1,24 @@
 #include "../headers/file-io-tasks/apue.h"
 
-#define	MAXLINE	4096
+#define    MAXLINE    4096
 
-static void
-err_doit(int errnoflag, int error, const char *fmt, va_list ap)
+static void err_doit(int errnoflag, int error, const char* fmt, va_list ap)
 {
-    char	buf[MAXLINE];
+    char buf[MAXLINE];
 
-    vsnprintf(buf, MAXLINE-1, fmt, ap);
+    vsnprintf(buf, MAXLINE - 1, fmt, ap);
     if (errnoflag)
-        snprintf(buf+strlen(buf), MAXLINE-strlen(buf)-1, ": %s",
+        snprintf(buf + strlen(buf), MAXLINE - strlen(buf) - 1, ": %s",
                 strerror(error));
     strcat(buf, "\n");
-    fflush(stdout);		/* in case stdout and stderr are the same */
+    fflush(stdout);        /* in case stdout and stderr are the same */
     fputs(buf, stderr);
-    fflush(NULL);		/* flushes all stdio output streams */
+    fflush(nullptr);        /* flushes all stdio output streams */
 }
 
-void
-err_sys(const char *fmt, ...)
+void err_sys(const char* fmt, ...)
 {
-    va_list		ap;
+    va_list ap;
 
     va_start(ap, fmt);
     err_doit(1, errno, fmt, ap);
@@ -33,25 +31,28 @@ int main()
     char buf1[] = "abcdefghij";
     char buf2[] = "ABCDEFGHIJ";
     int fd;
+    size_t buf1Length = 10;
+    size_t buf2Length = 10;
+    size_t seekSize = 16384;
 
     if ((fd = creat("file.hole", FILE_MODE)) < 0) {
         err_sys("ошибка вызова creat");
     }
 
-    if (write(fd, buf1, 10) != 10) {
+    if (write(fd, buf1, buf1Length) != buf1Length) {
         err_sys("ошибка записи buf1");
     }
-    /* теперь текущая позиция = 10 */
+    /* теперь текущая позиция = buf1Length */
 
-    if (lseek(fd, 16384, SEEK_SET) == -1) {
+    if (lseek(fd, seekSize, SEEK_SET) == -1) {
         err_sys("ошибка вызова lseek");
     }
-    /* теперь текущая позиция = 16384 */
+    /* теперь текущая позиция = seekSize */
 
-    if (write(fd, buf2, 10) != 10) {
+    if (write(fd, buf2, buf2Length) != buf2Length) {
         err_sys("ошибка записи buf2");
     }
-    /* теперь текущая позиция = 16394 */
+    /* теперь текущая позиция = seekSize + buf2Length */
 
-    exit(0);
+    return 0;
 }
