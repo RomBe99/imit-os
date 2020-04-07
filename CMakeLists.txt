@@ -3,4 +3,4 @@ project(os)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(os src/Main.cpp headers/file-io-tasks/apue.h)
+add_executable(os src/main.cpp headers/file-io-tasks/apue.h headers/file-io-tasks/file_with_hole.h)

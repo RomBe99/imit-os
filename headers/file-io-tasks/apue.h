@@ -32,7 +32,11 @@
 #define	MAXLINE	4096			/* max line length */
 
 /*
- * Default file access permissions for new files.
+ * Биты прав доступа к файлу:
+ * S_IRUSR - владелец может прочитать файл
+ * S_IWUSR - владелец может писать в файл
+ * S_IRGRP - пользователи входящие в группу владельца файла могут читать файл
+ * S_IROTH - все остальные пользователи имеют возможность чтения файла
  */
 #define	FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 

@@ -1,4 +1,7 @@
-#include "../headers/file-io-tasks/apue.h"
+#ifndef OS_FILE_WITH_HOLE_H
+#define OS_FILE_WITH_HOLE_H
+
+#include "apue.h"
 
 #define    MAXLINE    4096
 
@@ -26,8 +29,7 @@ void err_sys(const char* fmt, ...)
     exit(1);
 }
 
-int main()
-{
+void create_file_with_hole() {
     char buf1[] = "abcdefghij";
     char buf2[] = "ABCDEFGHIJ";
     int fd;
@@ -53,6 +55,6 @@ int main()
         err_sys("ошибка записи buf2");
     }
     /* теперь текущая позиция = seekSize + buf2Length */
-
-    return 0;
 }
+
+#endif
