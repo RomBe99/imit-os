@@ -29,12 +29,16 @@ void err_sys(const char* fmt, ...)
     exit(1);
 }
 
-void create_file_with_hole() {
+void create_file_with_hole()
+{
     char buf1[] = "abcdefghij";
     char buf2[] = "ABCDEFGHIJ";
     int fd;
+    // Длина первой строки
     size_t buf1Length = 10;
+    // Длина второй строки
     size_t buf2Length = 10;
+    // Длина "дырки"
     size_t seekSize = 16384;
 
     if ((fd = creat("file.hole", FILE_MODE)) < 0) {
