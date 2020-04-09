@@ -29,7 +29,7 @@ void err_sys(const char* fmt, ...)
     exit(1);
 }
 
-void create_file_with_hole(size_t buf1Length, size_t buf2Length, size_t seekSize, char* buf1, char* buf2)
+void create_file_with_hole(int argc, char** argv)
 {
     int fd;
 
@@ -37,20 +37,31 @@ void create_file_with_hole(size_t buf1Length, size_t buf2Length, size_t seekSize
         err_sys("ошибка вызова creat");
     }
 
-    if (write(fd, buf1, buf1Length) != buf1Length) {
-        err_sys("ошибка записи buf1");
-    }
-    /* теперь текущая позиция = buf1Length */
+    int length;
+    int temp = 0;
+    bool flag = true;
 
-    if (lseek(fd, seekSize, SEEK_SET) == -1) {
-        err_sys("ошибка вызова lseek");
-    }
-    /* теперь текущая позиция = seekSize */
+    for (int i = 1; i < argc; flag = !flag) {
+        if (flag) {
+            length = atoi(argv[i]);
+            temp += length;
+            ++i;
 
-    if (write(fd, buf2, buf2Length) != buf2Length) {
-        err_sys("ошибка записи buf2");
+            if (write(fd, argv[i], length) != length) {
+                err_sys("ошибка записи");
+            }
+
+            ++i;
+        }
+        else {
+            temp += atoi(argv[i]);
+            if (lseek(fd, temp, SEEK_SET) == -1) {
+                err_sys("ошибка вызова lseek");
+            }
+
+            ++i;
+        }
     }
-    /* теперь текущая позиция = seekSize + buf2Length */
 }
 
 #endif
