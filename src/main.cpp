@@ -1,6 +1,3 @@
-#include <cstdlib>
-#include <stdexcept>
-
 #include "../headers/copy_file_test/CopyFileUtils.h"
 
 int main(int argc, char** argv) {
