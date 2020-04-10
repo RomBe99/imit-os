@@ -1,26 +1,28 @@
-#include "../headers/file-io-tasks/file_with_hole.h"
+#include <cstdlib>
+#include <stdexcept>
 
-int main(int argc, char** argv)
-{
-    bool flag = false;
+#include "../headers/copy_file_test/CopyFileUtils.h"
 
-    for (int i = 1; i < argc; ++i) {
-        flag = !flag;
+int main(int argc, char** argv) {
+  bool isCorrectArgv = cmd_utils::checkCmdArgs(argc, argv);
 
-        if (flag) {
-            ++i;
-        }
+  if (!isCorrectArgv) {
+    printf("Argv contains incorrect arguments\n");
 
-        if (i % 2 == 0) {
-            continue;
-        }
+    return EXIT_FAILURE;
+  }
 
-        if (atoi(argv[i]) < 0) {
-            return EXIT_FAILURE;
-        }
-    }
+  int bufferSize = std::stoi(argv[1]);
+  std::string inputFileName = argv[3];
+  std::string outputFileName = argv[5];
 
-    create_file_with_hole(argc, argv);
+  bool isSuccessCopy = copy_file_utils::copyFile(bufferSize, inputFileName, outputFileName);
 
-    return EXIT_SUCCESS;
+  if (!isSuccessCopy) {
+    printf("Copy process canceled\n");
+
+    return EXIT_FAILURE;
+  }
+
+  return EXIT_SUCCESS;
 }
