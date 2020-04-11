@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "../../headers/copy_file_test/CopyFileUtils.h"
 
 bool cmd_utils::checkCmdArgs(int argc, char** argv) {
@@ -45,6 +47,6 @@ bool cmd_utils::checkCmdArgs(int argc, char** argv) {
 }
 
 // TODO Убрать заглушку
-bool copy_file_utils::copyFile(int bufferSize, const std::string& inputFileName, const std::string& outputFileName) {
+bool copy_file_utils::copyFile(size_t bufferSize, const std::string& inputFileName, const std::string& outputFileName) {
   return true;
 }
