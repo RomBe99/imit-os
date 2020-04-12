@@ -1,52 +1,46 @@
 #include <stdexcept>
+#include <unistd.h>
 
+#include "../../headers/cmd/CmdUtils.h"
 #include "../../headers/copy_file_test/CopyFileUtils.h"
 
 bool cmd_utils::checkCmdArgs(int argc, char** argv) {
-  const int ARGUMENTS_COUNT = 6;
-  const int MIN_BUFFER_SIZE = 0;
-  const int MAX_BUFFER_SIZE = 128;
-  const std::string INPUT_OPERATOR = "<";
-  const std::string OUTPUT_OPERATOR = ">";
-
-  if (argc != ARGUMENTS_COUNT) {
+  if (argc < 2) {
     printf("Invalid parameter count\n");
 
     return false;
   }
 
   try {
-    int bufferSize = std::stoi(argv[1]);
+    size_t bufferSize = std::stoi(argv[1]);
 
-    if (bufferSize < MIN_BUFFER_SIZE || bufferSize > MAX_BUFFER_SIZE) {
-      throw std::out_of_range("");
+    if (bufferSize > 0) {
+      return true;
     }
   } catch (std::invalid_argument&) {
     printf("Buffer size contain not a number\n");
-
-    return false;
   } catch (std::out_of_range&) {
     printf("Incorrect buffer size\n");
-
-    return false;
   }
 
-  if (std::string(argv[2]) != INPUT_OPERATOR) {
-    printf("Invalid input char\n");
-
-    return false;
-  }
-
-  if (std::string(argv[4]) != OUTPUT_OPERATOR) {
-    printf("Invalid output operator\n");
-
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
-// TODO Убрать заглушку
-bool copy_file_utils::copyFile(size_t bufferSize, const std::string& inputFileName, const std::string& outputFileName) {
-  return true;
+void copy_file_utils::copyFile(int bufferSize) {
+  const int INPUT_FILE_DESCRIPTOR = 0;
+  const int OUTPUT_FILE_DESCRIPTOR = 1;
+  void* buffer = malloc(bufferSize);
+  bool loop = true;
+  int bytesRead;
+
+  while (loop) {
+    bytesRead = read(INPUT_FILE_DESCRIPTOR, buffer, bufferSize);
+    loop = bytesRead > 0;
+
+    if (loop) {
+      write(OUTPUT_FILE_DESCRIPTOR, buffer, bytesRead);
+    }
+  }
+
+  free(buffer);
 }
