@@ -8,6 +8,11 @@ struct DirSymbols {
   std::string currentDir;
   std::string upDir;
   std::string pathSeparator;
+
+  DirSymbols(std::string root_dir,
+             std::string current_dir,
+             std::string up_dir,
+             std::string path_separator);
 };
 
 namespace cmd_utils {

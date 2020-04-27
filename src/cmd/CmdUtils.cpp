@@ -4,15 +4,18 @@
 
 #include "../../headers/cmd/CmdUtils.h"
 
+DirSymbols::DirSymbols(std::string root_dir,
+                       std::string current_dir,
+                       std::string up_dir,
+                       std::string path_separator)
+    : rootDir(std::move(root_dir)),
+      currentDir(std::move(current_dir)),
+      upDir(std::move(up_dir)),
+      pathSeparator(std::move(path_separator)) {
+}
+
 DirSymbols cmd_utils::getDirSymbolsForCurrentSystem() {
-  DirSymbols conf;
-
-  conf.rootDir = "/";
-  conf.currentDir = ".";
-  conf.upDir = "..";
-  conf.pathSeparator = "/";
-
-  return conf;
+  return DirSymbols("/", ".", "..", "/");
 }
 
 bool isEqualStats(struct stat s1, struct stat s2) {
