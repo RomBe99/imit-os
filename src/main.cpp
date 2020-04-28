@@ -1,5 +1,7 @@
-#include <cstdlib>
+#include "./../headers/Runners.h"
 
-int main(int argc, char** argv) {
-  return EXIT_SUCCESS;
+int main() {
+  runners::runTask3();
+
+  return 0;
 }
