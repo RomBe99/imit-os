@@ -24,23 +24,22 @@ bool isEqualStats(struct stat s1, struct stat s2) {
 
 std::string cmd_utils::getCurrentPath() {
   const DirSymbols DIR_SYMBOLS = cmd_utils::getDirSymbolsForCurrentSystem();
+
   struct stat rootStat{};
   struct stat currentStat{};
   struct stat tempStat{};
+
   std::string resultPath = std::string(DIR_SYMBOLS.rootDir);
   std::string currentPath = std::string(DIR_SYMBOLS.currentDir);
   std::string upDir;
   std::string resPart;
   std::string additionalPath;
+
   DIR* dir;
   dirent* temp;
 
   if (lstat(DIR_SYMBOLS.rootDir.c_str(), &rootStat) < 0) {
     throw std::runtime_error("Can't get root stat");
-  }
-
-  if (lstat(currentPath.c_str(), &currentStat) < 0) {
-    throw std::runtime_error("Can't get current stat");
   }
 
   while (!isEqualStats(rootStat, currentStat)) {
