@@ -19,6 +19,7 @@ namespace cmd_utils {
 bool checkCmdArgs(int argc, char** argv);
 DirSymbols getDirSymbolsForCurrentSystem();
 std::string getCurrentPath();
+int findAllSymbolicLinks(const std::string& path);
 }
 
 #endif
