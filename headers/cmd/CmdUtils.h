@@ -20,6 +20,7 @@ bool checkCmdArgs(int argc, char** argv);
 DirSymbols getDirSymbolsForCurrentSystem();
 std::string getCurrentPath();
 int findAllSymbolicLinks(const std::string& path);
+int countEvenNumberSymbolicLinks(const std::string& startPath, const int metric);
 }
 
 #endif
