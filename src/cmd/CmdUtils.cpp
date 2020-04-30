@@ -105,6 +105,10 @@ int cmd_utils::findAllSymbolicLinks(const std::string& path) {
     throw std::runtime_error("Can't get root stat");
   }
 
+  if (lstat(currentPath.c_str(), &currentStat) < 0) {
+    throw std::runtime_error("Can't get current stat");
+  }
+
   while (!isEqualStats(rootStat, currentStat)) {
     if (lstat(currentPath.c_str(), &currentStat) < 0) {
       throw std::runtime_error("Can't get current stat");
@@ -170,6 +174,10 @@ int cmd_utils::countEvenNumberSymbolicLinks(const std::string& startPath, const 
 
   if (lstat(DIR_SYMBOLS.rootDir.c_str(), &rootStat) < 0) {
     throw std::runtime_error("Can't get root stat");
+  }
+
+  if (lstat(currentPath.c_str(), &currentStat) < 0) {
+    throw std::runtime_error("Can't get current stat");
   }
 
   for (int i = 1; !isEqualStats(rootStat, currentStat); ++i) {
