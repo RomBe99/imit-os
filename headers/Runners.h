@@ -13,7 +13,7 @@ void runTask3() {
 
     printf("Count symbolic links on path %s = %d\n", absolutePath.c_str(), symbolicLinksCount);
     printf("Count symbolic links even 2 with metric %d = %d\n",
-        metric, cmd_utils::countEvenNumberSymbolicLinks(absolutePath, metric));
+        metric, cmd_utils::countEvenNumberSymbolicLinks(metric));
   } catch (std::runtime_error& ex) {
     printf("%s", ex.what());
   }

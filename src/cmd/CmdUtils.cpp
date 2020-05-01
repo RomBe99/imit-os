@@ -150,7 +150,7 @@ int cmd_utils::findAllSymbolicLinks(const std::string& path) {
   return count;
 }
 
-int cmd_utils::countEvenNumberSymbolicLinks(const std::string& startPath, const int metric) {
+int cmd_utils::countEvenNumberSymbolicLinks(const int metric) {
   if (metric < 1) {
     throw std::runtime_error("Entered invalid metric");
   }
