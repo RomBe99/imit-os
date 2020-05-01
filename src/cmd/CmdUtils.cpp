@@ -44,9 +44,13 @@ std::string cmd_utils::getCurrentPath() {
     throw std::runtime_error("Can't get root stat");
   }
 
-  while (!isEqualStats(rootStat, currentStat)) {
+   do {
     if (lstat(currentPath.c_str(), &currentStat) < 0) {
       throw std::runtime_error("Can't get current stat");
+    }
+
+    if (isEqualStats(rootStat, currentStat)) {
+      break;
     }
 
     upDir = currentPath + DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
@@ -78,7 +82,7 @@ std::string cmd_utils::getCurrentPath() {
     closedir(dir);
 
     currentPath += DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
-  }
+  } while (true);
 
   return resultPath;
 }
@@ -105,13 +109,13 @@ int cmd_utils::findAllSymbolicLinks(const std::string& path) {
     throw std::runtime_error("Can't get root stat");
   }
 
-  if (lstat(currentPath.c_str(), &currentStat) < 0) {
-    throw std::runtime_error("Can't get current stat");
-  }
-
-  while (!isEqualStats(rootStat, currentStat)) {
+  do {
     if (lstat(currentPath.c_str(), &currentStat) < 0) {
       throw std::runtime_error("Can't get current stat");
+    }
+
+    if (isEqualStats(rootStat, currentStat)) {
+      break;
     }
 
     upDir = currentPath + DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
@@ -145,7 +149,7 @@ int cmd_utils::findAllSymbolicLinks(const std::string& path) {
     closedir(dir);
 
     currentPath += DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
-  }
+  } while (true);
 
   return count;
 }
@@ -171,20 +175,22 @@ int cmd_utils::countEvenNumberSymbolicLinks(const int metric) {
   dirent* temp;
 
   int count = 0;
+  int i = 0;
 
   if (lstat(DIR_SYMBOLS.rootDir.c_str(), &rootStat) < 0) {
     throw std::runtime_error("Can't get root stat");
   }
 
-  if (lstat(currentPath.c_str(), &currentStat) < 0) {
-    throw std::runtime_error("Can't get current stat");
-  }
-
-  for (int i = 1; !isEqualStats(rootStat, currentStat); ++i) {
+  do {
     if (lstat(currentPath.c_str(), &currentStat) < 0) {
       throw std::runtime_error("Can't get current stat");
     }
 
+    if (isEqualStats(rootStat, currentStat)) {
+      break;
+    }
+
+    ++i;
     upDir = currentPath + DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
 
     if ((dir = opendir(upDir.c_str())) == nullptr) {
@@ -207,14 +213,14 @@ int cmd_utils::countEvenNumberSymbolicLinks(const int metric) {
           throw std::runtime_error("Can't read content by link in " + additionalPath);
         }
 
-        count += metric;
+        count++;
       }
     }
 
     closedir(dir);
 
     currentPath += DIR_SYMBOLS.pathSeparator + DIR_SYMBOLS.upDir;
-  }
+  } while (true);
 
   return count;
 }
