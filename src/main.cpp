@@ -21,7 +21,7 @@ string getCurrentPath() {
   struct stat tempStat{};
 
   string resultPath = string(ROOT_DIR);
-  string currentPath = string(CURRENT_DIR);
+  string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
   string upDir;
   string resPart;
   string additionalPath;
@@ -42,7 +42,7 @@ string getCurrentPath() {
       break;
     }
 
-    upDir = currentPath + PATH_SEPARATOR + UP_DIR;
+    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
 
     if ((dir = opendir(upDir.c_str())) == nullptr) {
       throw runtime_error("Can't open dir");
@@ -53,7 +53,7 @@ string getCurrentPath() {
         continue;
       }
 
-      additionalPath = upDir + PATH_SEPARATOR + temp->d_name;
+      additionalPath = upDir + temp->d_name;
 
       if (lstat(additionalPath.c_str(), &tempStat) < 0) {
         throw runtime_error("Can't get info about file");
@@ -70,7 +70,7 @@ string getCurrentPath() {
 
     closedir(dir);
 
-    currentPath += PATH_SEPARATOR + UP_DIR;
+    currentPath += UP_DIR + PATH_SEPARATOR;
   } while (true);
 
   return resultPath;
@@ -88,7 +88,7 @@ int findAllSymbolicLinks(const string& path) {
   struct stat currentStat{};
   struct stat tempStat{};
 
-  string currentPath = string(CURRENT_DIR);
+  string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
   string upDir;
   string additionalPath;
   char* buffer = new char[BUFFER_SIZE];
@@ -111,7 +111,7 @@ int findAllSymbolicLinks(const string& path) {
       break;
     }
 
-    upDir = currentPath + PATH_SEPARATOR + UP_DIR;
+    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
 
     if ((dir = opendir(upDir.c_str())) == nullptr) {
       throw runtime_error("Can't open dir");
@@ -122,7 +122,7 @@ int findAllSymbolicLinks(const string& path) {
         continue;
       }
 
-      additionalPath = upDir + PATH_SEPARATOR + temp->d_name;
+      additionalPath = upDir + temp->d_name;
 
       if (lstat(additionalPath.c_str(), &tempStat) < 0) {
         throw runtime_error("Can't get info about file");
@@ -141,7 +141,7 @@ int findAllSymbolicLinks(const string& path) {
 
     closedir(dir);
 
-    currentPath += PATH_SEPARATOR + UP_DIR;
+    currentPath += UP_DIR + PATH_SEPARATOR;
   } while (true);
 
   return count;
@@ -163,7 +163,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
   struct stat currentStat{};
   struct stat tempStat{};
 
-  string currentPath = string(CURRENT_DIR);
+  string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
   string upDir;
   string additionalPath;
   char* buffer = new char[BUFFER_SIZE];
@@ -172,7 +172,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
   dirent* temp;
 
   int count = 0;
-  int i = 0;
+  int i = 1;
 
   if (lstat(ROOT_DIR.c_str(), &rootStat) < 0) {
     throw runtime_error("Can't get root stat");
@@ -188,7 +188,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
     }
 
     ++i;
-    upDir = currentPath + PATH_SEPARATOR + UP_DIR;
+    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
 
     if ((dir = opendir(upDir.c_str())) == nullptr) {
       throw runtime_error("Can't open dir");
@@ -199,7 +199,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
         continue;
       }
 
-      additionalPath = upDir + PATH_SEPARATOR + temp->d_name;
+      additionalPath = upDir + temp->d_name;
 
       if (lstat(additionalPath.c_str(), &tempStat) < 0) {
         throw runtime_error("Can't get info about file");
@@ -216,7 +216,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
 
     closedir(dir);
 
-    currentPath += PATH_SEPARATOR + UP_DIR;
+    currentPath += UP_DIR + PATH_SEPARATOR;
   } while (true);
 
   return count;
