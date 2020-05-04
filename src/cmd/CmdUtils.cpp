@@ -20,7 +20,7 @@ DirSymbols cmd_utils::getDirSymbolsForCurrentSystem() {
   return DirSymbols("/", ".", "..", "/");
 }
 
-bool isEqualStats(struct stat s1, struct stat s2) {
+bool cmd_utils::isEqualStats(struct stat s1, struct stat s2) {
   return s1.st_dev == s2.st_dev && s1.st_ino == s2.st_ino;
 }
 
