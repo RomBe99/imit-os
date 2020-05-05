@@ -89,7 +89,7 @@ int findAllSymbolicLinks(const string& path) {
   struct stat tempStat{};
 
   string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
-  string upDir;
+  string upDir = currentPath;
   string additionalPath;
   char* buffer = new char[BUFFER_SIZE];
 
@@ -110,8 +110,6 @@ int findAllSymbolicLinks(const string& path) {
     if (isEqualStats(rootStat, currentStat)) {
       break;
     }
-
-    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
 
     if ((dir = opendir(upDir.c_str())) == nullptr) {
       throw runtime_error("Can't open dir");
@@ -134,7 +132,7 @@ int findAllSymbolicLinks(const string& path) {
         }
 
         if (path == buffer) {
-          count++;
+          ++count;
         }
       }
     }
@@ -142,6 +140,7 @@ int findAllSymbolicLinks(const string& path) {
     closedir(dir);
 
     currentPath += UP_DIR + PATH_SEPARATOR;
+    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
   } while (true);
 
   return count;
@@ -164,7 +163,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
   struct stat tempStat{};
 
   string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
-  string upDir;
+  string upDir = currentPath;
   string additionalPath;
   char* buffer = new char[BUFFER_SIZE];
 
@@ -172,7 +171,7 @@ int countEvenNumberSymbolicLinks(const int metric) {
   dirent* temp;
 
   int count = 0;
-  int i = 1;
+  bool flag = false;
 
   if (lstat(ROOT_DIR.c_str(), &rootStat) < 0) {
     throw runtime_error("Can't get root stat");
@@ -187,14 +186,11 @@ int countEvenNumberSymbolicLinks(const int metric) {
       break;
     }
 
-    ++i;
-    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
-
     if ((dir = opendir(upDir.c_str())) == nullptr) {
       throw runtime_error("Can't open dir");
     }
 
-    while (i % 2 == 0 && (temp = readdir(dir)) != nullptr) {
+    while (flag && (temp = readdir(dir)) != nullptr) {
       if (CURRENT_DIR == temp->d_name || UP_DIR == temp->d_name) {
         continue;
       }
@@ -210,13 +206,15 @@ int countEvenNumberSymbolicLinks(const int metric) {
           throw runtime_error("Can't read content by link in " + additionalPath);
         }
 
-        count++;
+        ++count;
       }
     }
 
     closedir(dir);
+    flag = !flag;
 
     currentPath += UP_DIR + PATH_SEPARATOR;
+    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
   } while (true);
 
   return count;
