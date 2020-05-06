@@ -10,72 +10,6 @@ bool isEqualStats(struct stat s1, struct stat s2) {
   return s1.st_dev == s2.st_dev && s1.st_ino == s2.st_ino;
 }
 
-string getCurrentPath() {
-  const string ROOT_DIR = "/";
-  const string CURRENT_DIR = ".";
-  const string UP_DIR = "..";
-  const string PATH_SEPARATOR = "/";
-
-  struct stat rootStat{};
-  struct stat currentStat{};
-  struct stat tempStat{};
-
-  string resultPath = string(ROOT_DIR);
-  string currentPath = string(CURRENT_DIR + PATH_SEPARATOR);
-  string upDir;
-  string resPart;
-  string additionalPath;
-
-  DIR* dir;
-  dirent* temp;
-
-  if (lstat(ROOT_DIR.c_str(), &rootStat) < 0) {
-    throw runtime_error("Can't get root stat");
-  }
-
-  do {
-    if (lstat(currentPath.c_str(), &currentStat) < 0) {
-      throw runtime_error("Can't get current stat");
-    }
-
-    if (isEqualStats(rootStat, currentStat)) {
-      break;
-    }
-
-    upDir = currentPath + UP_DIR + PATH_SEPARATOR;
-
-    if ((dir = opendir(upDir.c_str())) == nullptr) {
-      throw runtime_error("Can't open dir");
-    }
-
-    while ((temp = readdir(dir)) != nullptr) {
-      if (CURRENT_DIR == temp->d_name || UP_DIR == temp->d_name) {
-        continue;
-      }
-
-      additionalPath = upDir + temp->d_name;
-
-      if (lstat(additionalPath.c_str(), &tempStat) < 0) {
-        throw runtime_error("Can't get info about file");
-      }
-
-      if (isEqualStats(tempStat, currentStat)) {
-        resPart = string(PATH_SEPARATOR + temp->d_name);
-        resPart.append(resultPath);
-        resultPath = resPart;
-
-        break;
-      }
-    }
-
-    closedir(dir);
-
-    currentPath += UP_DIR + PATH_SEPARATOR;
-  } while (true);
-
-  return resultPath;
-}
-
 int findAllSymbolicLinks(const string& path) {
   const string ROOT_DIR = "/";
   const string CURRENT_DIR = ".";
@@ -221,9 +155,14 @@ int countEvenNumberSymbolicLinks(const int metric) {
 }
 
 int main() {
-  try {
-    std::string absolutePath = getCurrentPath();
+  const int BUFFER_SIZE = 8192;
+  char* buf = new char[BUFFER_SIZE];
+  // Функция getwd() описана в POSIX.1-2001, но помечена как УСТАРЕВШАЯ. В POSIX.1-2008 getwd() удалена.
+  // Вместо неё лучше использовать getcwd(). В POSIX.1-2001 не определены ошибки, возвращаемые getwd().
+//    std::string absolutePath = std::string(getwd(buf));
+  std::string absolutePath = std::string(getcwd(buf, BUFFER_SIZE));
 
+  try {
     int symbolicLinksCount = findAllSymbolicLinks(absolutePath);
     int metric = 1;
 
@@ -233,6 +172,8 @@ int main() {
   } catch (std::runtime_error& ex) {
     printf("%s", ex.what());
   }
+
+  delete[] buf;
 
   return 0;
 }
