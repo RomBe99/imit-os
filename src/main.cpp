@@ -221,9 +221,14 @@ int countEvenNumberSymbolicLinks(const int metric) {
 }
 
 int main() {
-  try {
-    std::string absolutePath = getCurrentPath();
+  const int BUFFER_SIZE = 8192;
+  char* buf = new char[BUFFER_SIZE];
+  // Функция getwd() описана в POSIX.1-2001, но помечена как УСТАРЕВШАЯ. В POSIX.1-2008 getwd() удалена.
+  // Вместо неё лучше использовать getcwd(). В POSIX.1-2001 не определены ошибки, возвращаемые getwd().
+//    std::string absolutePath = std::string(getwd(buf));
+  std::string absolutePath = std::string(getcwd(buf, BUFFER_SIZE));
 
+  try {
     int symbolicLinksCount = findAllSymbolicLinks(absolutePath);
     int metric = 1;
 
@@ -233,6 +238,8 @@ int main() {
   } catch (std::runtime_error& ex) {
     printf("%s", ex.what());
   }
+
+  delete[] buf;
 
   return 0;
 }
