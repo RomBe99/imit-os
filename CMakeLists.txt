@@ -3,4 +3,10 @@ project(os)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(os src/main.cpp headers/file-io-tasks/apue.h headers/file-io-tasks/file_with_hole.h headers/copy_file_test/CopyFileUtils.h headers/cmd/CmdUtils.h src/copy_file_test/CopyFileUtils.cpp headers/Runners.h src/cmd/CmdUtils.cpp)
+# Для компиляции клиента необходимо раскомментировать строку с Reader.h/cpp и в Reader.cpp раскомментировать main
+# Для компиляции сервера необходимо раскомментировать строку с Writer.h/cpp и в Writer.cpp раскомментировать main
+
+add_executable(os headers/daemon/msgdata.h src/daemon/msgdata.cpp
+#        headers/daemon/Reader.h src/daemon/Reader.cpp
+#        headers/daemon/Daemon.h src/daemon/Daemon.cpp headers/daemon/Writer.h src/daemon/Writer.cpp
+        )
