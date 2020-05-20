@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
   void* buf = malloc(BUFFER_SIZE);
 
   while (true) {
+    // FIXME Пытаемся прочитать из канала связи сообщение сервера.
     if (fd > 0) {
       read(fd, buf, BUFFER_SIZE);
       printf("Server> %s", (char*) buf);

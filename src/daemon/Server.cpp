@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   }
 
 
-  // Демонизируем процесс
+  // Демонизируем процесс (на период отладки отключил)
 //  try {
 //    demonize(cmd);
 //  } catch (std::runtime_error& ex) {
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    // Выводим сообщение клиенту.
+    // FIXME Выводим сообщение клиенту.
     if (data.msglen > 0) {
       int a = write(clients.at(data.pid).second, (void*) data.msgbuf, data.msglen);
       if (a < 0) {
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
       data.msglen = 0;
     }
 
-    // Один из клиентов отключился.
+    // FIXME Один из клиентов отключился.
     if (data.done == 1 && clients.count(data.pid) != 0) {
       std::pair<int, int> tmp = clients.at(data.pid);
 
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
 
   fprintf(stderr, "Server process %d exits\n", getpid());
 
-  // Очищаем ресурсы сервера.
+  // FIXME Очищаем ресурсы сервера.
   msgClose(msgId);
 
   close(fdwrite);
