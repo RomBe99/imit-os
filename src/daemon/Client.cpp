@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <csignal>
+#include <string>
+#include <fcntl.h>
 
 #include "../../headers/daemon/msgdata.h"
 
@@ -22,8 +24,20 @@ int main(int argc, char* argv[]) {
 
   MSGDATA data;
   data.pid = getpid();
+  std::string serverOutput = std::to_string(data.pid);
+
+  int fd = 0;
+  bool flag = true;
+  const size_t BUFFER_SIZE = 1024;
+
+  void* buf = malloc(BUFFER_SIZE);
 
   while (true) {
+    if (fd > 0) {
+      read(fd, buf, BUFFER_SIZE);
+      printf("Server> %s", (char*) buf);
+    }
+
     signal(SIGHUP, SIG_IGN);
 
     if (!fgets(data.msgbuf, BUF_LEN, stdin)) {
@@ -38,7 +52,20 @@ int main(int argc, char* argv[]) {
       perror("send");
       fprintf(stderr, "Cannot send message\n");
 
+      msgClose(msgId);
+      close(fd);
+
       return -1;
+    }
+
+    if (flag) {
+      flag = !flag;
+
+      fd = open(serverOutput.c_str(), O_RDONLY) < 0;
+
+      if (fd < 0) {
+        break;
+      }
     }
   }
 
@@ -55,6 +82,8 @@ int main(int argc, char* argv[]) {
   fprintf(stderr, "Client process %d exits\n", getpid());
 
   msgClose(msgId);
+  close(fd);
+  free(buf);
 
   return 0;
 }

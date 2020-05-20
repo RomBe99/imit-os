@@ -53,13 +53,13 @@ int main(int argc, char* argv[]) {
 
 
   // Демонизируем процесс
-  try {
-    demonize(cmd);
-  } catch (std::runtime_error& ex) {
-    printf("%s", ex.what());
-
-    return -1;
-  }
+//  try {
+//    demonize(cmd);
+//  } catch (std::runtime_error& ex) {
+//    printf("%s", ex.what());
+//
+//    return -1;
+//  }
 
   int msgId;
 
@@ -110,6 +110,13 @@ int main(int argc, char* argv[]) {
 
     // Выводим сообщение клиенту.
     if (data.msglen > 0) {
+      int a = write(clients.at(data.pid).second, (void*) data.msgbuf, data.msglen);
+      if (a < 0) {
+        // TODO DEBUG
+        printf("can't receive message for %d\n", data.pid);
+      }
+
+      // TODO DEBUG
       printf("%d> %s", data.pid, data.msgbuf);
       data.msglen = 0;
     }
