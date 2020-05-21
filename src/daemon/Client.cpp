@@ -2,8 +2,7 @@
 #include <csignal>
 #include <string>
 #include <fcntl.h>
-
-#include "../../headers/daemon/msgdata.h"
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -13,78 +12,74 @@ int main(int argc, char* argv[]) {
   }
 
   char* filePath = argv[1];
+  int fd;
 
-  int msgId;
+  fd = open(filePath, O_WRONLY);
 
-  if ((msgId = msgOpen(filePath)) < 0) {
-    printf("Can't get msgId\n");
+  if (fd < 0) {
+    printf("Can't connect to server fifo\n");
 
     return -1;
   }
 
-  MSGDATA data;
-  data.pid = getpid();
-  std::string serverOutput = std::to_string(data.pid);
+  pid_t pid = getpid();
+  std::string serverOutput = std::to_string(pid);
 
-  int fd = 0;
-  bool flag = true;
   const size_t BUFFER_SIZE = 1024;
 
-  void* buf = malloc(BUFFER_SIZE);
+  void* serverOutputBuf = malloc(BUFFER_SIZE);
+  char* serverInputBuf = new char[BUFFER_SIZE];
+
+  std::string tmp = "Knock Knock";
+  std::string postfix = ':' + std::to_string(pid);
+  tmp += postfix;
+  const std::string DISCONNECT_MSG = "Bye Bye";
+  int serverOutputFD = -1;
+
+  write(fd, tmp.c_str(), BUFFER_SIZE);
 
   while (true) {
-    // FIXME Пытаемся прочитать из канала связи сообщение сервера.
-    if (fd > 0) {
-      read(fd, buf, BUFFER_SIZE);
-      printf("Server> %s", (char*) buf);
-    }
-
     signal(SIGHUP, SIG_IGN);
 
-    if (!fgets(data.msgbuf, BUF_LEN, stdin)) {
+    if (!fgets(serverInputBuf, BUFFER_SIZE, stdin)) {
+      tmp = DISCONNECT_MSG + postfix;
+
+      if (write(fd, tmp.c_str(), BUFFER_SIZE) < 0) {
+        fprintf(stderr, "Can't send last client message\n");
+      }
+
       break;
     }
 
-    data.msglen = (int) strlen(data.msgbuf) + 1;
-    data.done = 0;
-    data.mtype = 1;
+    tmp = serverInputBuf + postfix;
 
-    if (msgsnd(msgId, &data, MSGDATA_LEN, 0) < 0) {
-      perror("send");
-      fprintf(stderr, "Cannot send message\n");
-
-      msgClose(msgId);
-      close(fd);
-
-      return -1;
+    if (write(fd, tmp.c_str(), BUFFER_SIZE) < 0) {
+      fprintf(stderr, "Can't send message to server\n");
     }
 
-    if (flag) {
-      flag = !flag;
+    if (serverOutputFD < 0) {
+      if ((serverOutputFD = open(serverOutput.c_str(), O_RDONLY)) < 0) {
+        fprintf(stderr, "Can't open server output %s\n", serverOutput.c_str());
 
-      fd = open(serverOutput.c_str(), O_RDONLY) < 0;
-
-      if (fd < 0) {
         break;
+      }
+    }
+
+    if (serverOutputFD > 0) {
+      if (read(serverOutputFD, serverOutputBuf, BUFFER_SIZE) > 0) {
+        printf("Server> %s", (char*) serverOutputBuf);
       }
     }
   }
 
-  data.mtype = 1;
-  data.done = 1;
-  data.msglen = 0;
+  fprintf(stderr, "Client process %d exits\n", pid);
 
-  if (msgsnd(msgId, &data, MSGDATA_LEN, 0) < 0) {
-    fprintf(stderr, "Cannot send message\n");
-
-    return -1;
+  if (fd > 0) {
+    close(fd);
   }
 
-  fprintf(stderr, "Client process %d exits\n", getpid());
-
-  msgClose(msgId);
-  close(fd);
-  free(buf);
+  free(serverOutputBuf);
+  delete[] serverInputBuf;
 
   return 0;
 }
