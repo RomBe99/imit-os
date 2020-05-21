@@ -9,6 +9,16 @@
 
 #define FILE_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
+std::string convertMessage(const std::string& s) {
+  std::string result;
+
+  for (const auto& c : s) {
+    result.push_back(toupper(c));
+  }
+
+  return result;
+}
+
 int main(int argc, char* argv[]) {
   // Провекрка на количество параметров (вторым параметром идёт имя файла который будет использоваться).
   if (argc < 2) {
@@ -137,7 +147,7 @@ int main(int argc, char* argv[]) {
       clients.erase(pid);
     } else {
       // Отправляем данные пользователю.
-      if (write(clients.at(pid).second, msg.c_str(), BUFFER_SIZE) < 0) {
+      if (write(clients.at(pid).second, convertMessage(msg).c_str(), BUFFER_SIZE) < 0) {
         break;
       }
     }
