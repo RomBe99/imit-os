@@ -27,18 +27,16 @@ bool cmd_utils::checkCmdArgs(int argc, char** argv) {
 }
 
 void copy_file_utils::copyFile(int bufferSize) {
-  const int INPUT_FILE_DESCRIPTOR = 0;
-  const int OUTPUT_FILE_DESCRIPTOR = 1;
   void* buffer = malloc(bufferSize);
   bool loop = true;
   int bytesRead;
 
   while (loop) {
-    bytesRead = read(INPUT_FILE_DESCRIPTOR, buffer, bufferSize);
+    bytesRead = read(STDIN_FILENO, buffer, bufferSize);
     loop = bytesRead > 0;
 
     if (loop) {
-      write(OUTPUT_FILE_DESCRIPTOR, buffer, bytesRead);
+      write(STD0UT_FILENO, buffer, bytesRead);
     }
   }
 
